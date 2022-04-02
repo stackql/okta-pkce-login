@@ -104,7 +104,7 @@ func buildAuthorizeUrl(clientid string, issuer string, redirecturi string, codeC
 	state = uuid.New().String()
 
 	// generate url for login
-	return fmt.Sprintf("%s/v1/authorize?"+
+	return fmt.Sprintf("%s/authorize?"+
 		"response_type=code"+
 		"&client_id=%s"+
 		"&redirect_uri=%s"+
@@ -132,7 +132,7 @@ func openAuthUrl(authUrl string) {
 func getAccessToken(issuer string, clientID string, codeVerifier string, authorizationCode string, callbackURL string) (string, error) {
 
 	// set the url and form-encoded data for the POST to the access token endpoint
-	url := fmt.Sprintf("%s/v1/token", issuer)
+	url := fmt.Sprintf("%s/token", issuer)
 
 	log.Printf("Exchanging authz code for access token at: %s", url)
 
@@ -186,7 +186,7 @@ func getAccessToken(issuer string, clientID string, codeVerifier string, authori
 func getUserInfo(issuer string, accessToken string) (string, error) {
 
 	// set the url and form-encoded data for the POST to the access token endpoint
-	url := fmt.Sprintf("%s/v1/userinfo", issuer)
+	url := fmt.Sprintf("%s/userinfo", issuer)
 
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("Authorization", "Bearer "+accessToken)
@@ -205,15 +205,19 @@ func getUserInfo(issuer string, accessToken string) (string, error) {
 
 	log.Printf("HTTP response code: %d", respCode)
 
-	// unmarshal the response
-	err = json.Unmarshal(body, &responseData)
-	if err != nil {
-		log.Fatal(fmt.Printf("Error unmarshaling responsebody: %s", err))
-		return "", err
+	if respCode != 200 {
+		jsonString, _ := json.Marshal(responseData)
+		return string(jsonString), nil
+	} else {
+		// unmarshal the response
+		err = json.Unmarshal(body, &responseData)
+		if err != nil {
+			log.Fatal(fmt.Printf("Error unmarshaling responsebody: %s", err))
+			return "", err
+		}
+		jsonString, _ := json.MarshalIndent(responseData, "", "  ")
+		return string(jsonString), nil
 	}
-
-	jsonString, _ := json.MarshalIndent(responseData, "", "  ")
-	return string(jsonString), nil
 
 }
 

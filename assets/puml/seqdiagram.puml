@@ -1,0 +1,30 @@
+@startuml
+
+actor User as user
+participant "Authorization Service\n(Okta)" as okta
+participant "Identity Provider\n(Azure AD App Registration)" as aadappreg
+participant "Identity Provider\n(Azure AD Authenticating Tenant)" as aad
+participant "Resource Server" as resource
+
+user --> okta: Get authorization code\n<i>({issuer}/authorize?{params})</i>
+note right
+send code_challenge in {params} for PKCE
+(hash of code_verifier)
+end note
+okta --> aadappreg: Redirect for authentication
+aadappreg --> aad: Redirect for authentication
+aad --> user: Prompt for credentials if not authenticated
+user --> aad: Provides credentials
+aad -> aad: Authenticate user
+aad --> aadappreg: Return authentication result
+aadappreg --> okta: Return authentication result
+okta --> user: Return code to callback URL\n<i>({redirect}/callback?code={code})</i>
+user --> okta: Exchange code for token\n<i>({issuer}/token?{params})</i>
+note right
+send code_verifier in request body for PKCE
+end note
+okta --> user: Returns token
+user --> okta: Get user info using token\n<i>({issuer}/userinfo?{params})</i>
+okta --> user: Returns user info
+user --> resource: Request resources using\n<i>Authorization: Bearer {token}</i>\nin the request header
+@enduml

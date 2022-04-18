@@ -2,11 +2,13 @@
 
 This repository demonstrates a simple command line utility to login to an authorization server (Okta in this case).  
 
-A step by step explanation is provided at [Simple CLI Application to Login to Okta via PKCE](https://fullstackchronicles.io/simple-pkce-okta-cli).  
+A step by step explanation is provided at [Simple CLI Application to Login to Okta using PKCE](https://fullstackchronicles.io/simple-cli-pkce-auth-using-okta).  
+
+![PKCE Authorization to Okta using an AD IdP](/assets/images/okta-pkce-cli-login.png)
 
 This can be used to illustrate the authorization/authentication flow discussed in [Simple SSO with an external IdP using Active Directory and Okta](https://fullstackchronicles.io/simple-sso-with-an-external-idp-using-active-directory-and-okta).  A flow which is pictured here:  
 
- ![PKCE Authorization to Okta using an AD IdP](/assets/images/seqdiagram.png)
+![PKCE Authorization to Okta using an AD IdP](/assets/images/seqdiagram.png)
 
 with inspiration from...
 
